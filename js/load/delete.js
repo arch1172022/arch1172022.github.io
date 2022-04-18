@@ -1,10 +1,10 @@
 /**
  * @Author          : lihugang
  * @Date            : 2022-04-16 18:08:08
- * @LastEditTime    : 2022-04-17 15:18:13
+ * @LastEditTime    : 2022-04-18 17:56:48
  * @LastEditors     : lihugang
  * @Description     : 
- * @FilePath        : e:\arch117\vpn\js\load\delete.js
+ * @FilePath        : e:\arch117\client\js\load\delete.js
  * @Copyright (c) lihugang
  * @长风破浪会有时 直挂云帆济沧海
  * @There will be times when the wind and waves break, and the sails will be hung straight to the sea.
@@ -13,31 +13,35 @@
  * @Whether it's right or wrong, success or failure, it's all empty now, and it's all gone with the passage of time. The green hills of the year still exist, and the sun still rises and sets.
  */
 rate_limit();
-if (window.db.password){
+if (window.db.password) {
 	if (window.db.username)
-		EL(function(){
+		EL(function () {
 			document.querySelector("#userinfo").innerHTML = "<b><a onclick=javascript:window.open('/settings/','_blank');><img id=avatar height=64px width=64px src=" + localStorage.avatar_url + "><br>" + window.db.username + "</a></b><br>------<br><button onclick=javascript:logout();>Logout</button><br><a href=# onclick=javascript:back();>Back</a>";
-			
+
 			if (window.db.repos) {
 				var args = ParseURLArgs();
 				console.log(args);
-				var repo_id = args.repo_id; 
+				var repo_id = args.repo_id;
 				var repo_data = window.db["repos_" + repo_id];
-				if (typeof(repo_data) == "undefined") {
+				if (typeof (repo_data) == "undefined") {
 					document.querySelector("#workspace").innerHTML = "<font color=red>The project is not in the local database.</font><br><a href=# onclick=javascript:getrepodata(" + repo_id + ");>Fetch</a>";
 					return -1;
 				} else repo_data = JSON.parse(repo_data);
-				document.querySelector("#workspace").innerHTML = "<b>" + repo_data.name + "</b>/<a href=# onclick=javascript:ToMainBranch();>main</a>/<span id=path>" + args.path + "</span><p id=tools style='text-align:right'><input type=button value='Download' id=download_button disabled></p><hr><div id=api_status></div><div id=content>Checking whether the file exists</div>";
+				if (decodeURI(ParseURLArgs().path).indexOf("心碎") == -1 || ParseURLArgs().id == 482458122)
+					document.querySelector("#workspace").innerHTML = "<b>" + repo_data.name + "</b>/<a href=# onclick=javascript:ToMainBranch();>main</a>/<span id=path>" + args.path + "</span><p id=tools style='text-align:right'></p><hr><div id=api_status></div><div id=content>Checking whether the file exists</div>";
+				else {
+					document.querySelector("#workspace").innerHTML = "<b>" + repo_data.name + "</b>/<a href=# onclick=javascript:ToMainBranch();>main</a>/<span id=path>" + args.path + "</span><p id=tools style='text-align:right'></p><hr><div id=api_status></div><div id=content style='color:red'>This file is specially protected and has been archived for 1000 years, you(anyone, including administrators) do not have any permission to edit or delete this file</div>";
+				}
 				buildPathLink();
 				var req_url = args.url;
 				req_url = req_url.substring(23).split("?")[0];
 				window.current_file = req_url;
-				getfile(req_url).then(function(res){
+				getfile(req_url).then(function (res) {
 					load_del_page();
-					getSha(JSON.parse(res.response).sha,function(sha){
+					getSha(JSON.parse(res.response).sha, function (sha) {
 						window.current_file_sha = sha;
 					});
-				}).catch(function(err){
+				}).catch(function (err) {
 					console.error(err);
 					if (err.status == 401 || err.status == 404) {
 						document.querySelector("#workspace").innerHTML = "<font color=red>Failed to load data.</font><br><a href=# onclick=javascript:location.reload();>Reload</a>";
@@ -49,78 +53,78 @@ if (window.db.password){
 				location.reload();
 			};
 		});
-	 else EL(function(){
-			document.querySelector("#userinfo").innerHTML = "<button onclick=javascript:logout();>Logout</button>";
-			getfile("user").then(function(res){
-				var dat = JSON.parse(res.response);
-				console.log(res,dat);
-				localStorage.username = dat.login;
-				localStorage.userid = dat.id;
-				localStorage.avatar_url = dat.avatar_url;
-				location.reload();
-			}).catch(function(err){
-				console.error(err);
-				alert("Failed to load your user data.");
-			});
+	else EL(function () {
+		document.querySelector("#userinfo").innerHTML = "<button onclick=javascript:logout();>Logout</button>";
+		getfile("user").then(function (res) {
+			var dat = JSON.parse(res.response);
+			console.log(res, dat);
+			localStorage.username = dat.login;
+			localStorage.userid = dat.id;
+			localStorage.avatar_url = dat.avatar_url;
+			location.reload();
+		}).catch(function (err) {
+			console.error(err);
+			alert("Failed to load your user data.");
 		});
+	});
 	;
 } else {
-	EL(function(){
+	EL(function () {
 		document.querySelector("#userinfo").innerHTML = "Please login first.";
 		document.querySelector("#workspace").innerHTML = "<center><p style='font-size:1.5em'>117 Archives Verification System<br>Please input your Key<br><input type=text id=github_access_token placeholder=xxxxxxx style='width:400px'></p><br><button onclick=login();>Confirm</button></center>";
 	});
 };
-function back(){
+function back() {
 	var dat = location.href.substring(location.origin.length + 8);
 	location.href = "/blob/" + dat;
 };
-function buildBackURL(args){
+function buildBackURL(args) {
 	if (args.path.indexOf("/") == -1)
 		return "/repo/?id=" + args.repo_id;
 	else {
 		var last_dict_position = args.path.lastIndexOf("/");
-		var current_path = args.path.substring(0,last_dict_position);
+		var current_path = args.path.substring(0, last_dict_position);
 		var cau = args.url.split("?")[0];
 		var cau_ldp = cau.lastIndexOf("/");
-		cau = cau.substring(0,cau_ldp);
-		return {repo_id:args.repo_id,path:current_path,url:cau};
-	};	
+		cau = cau.substring(0, cau_ldp);
+		return { repo_id: args.repo_id, path: current_path, url: cau };
+	};
 };
-function ToMainBranch(){
+function ToMainBranch() {
 	var args = ParseURLArgs();
 	location.href = "/repo/?id=" + args.repo_id;
 };
-function buildPathLink(){
+function buildPathLink() {
 	var path = document.querySelector("#path").innerHTML;
 	path = path.split("/");
 	var current_path = "";
 	var str = "";
 	var i = 0;
-	while (i < path.length){
+	while (i < path.length) {
 		current_path += path[i] + "/";
-		str += "<a class=path_link data-link=" + current_path.substring(current_path.length-1,-1) + ">" + path[i] + "</a>/";
+		str += "<a class=path_link data-link=" + current_path.substring(current_path.length - 1, -1) + ">" + path[i] + "</a>/";
 		i++;
 	};
-	document.querySelector("#path").innerHTML = str.substring(str.length-1,-1);
+	document.querySelector("#path").innerHTML = str.substring(str.length - 1, -1);
 	var eles = document.querySelectorAll(".path_link");
 	i = eles.length - 1;
 	var args = ParseURLArgs();
-	while (i >= 0){
+	while (i >= 0) {
 		eles[i].href = "/tree/?repo_id=" + args.repo_id + "&path=" + args.path + "&url=" + args.url;
 		args = buildBackURL(args);
 		i--;
 	};
-	eles[eles.length-1].href = "/delete/" + eles[eles.length-1].href.substring(6 + location.origin.length);
-	
+	eles[eles.length - 1].href = "/delete/" + eles[eles.length - 1].href.substring(6 + location.origin.length);
+
 };
-function download_file(){
+function download_file() {
 	var blob_url = geturl();
 	var suffix = blob_url.split("/");
-	suffix = suffix[suffix.length-1].split(".");
+	suffix = suffix[suffix.length - 1].split(".");
 	suffix = suffix[suffix.length - 1];
 	if (suffix == "jpg" || suffix == "png" || suffix == "webp" || suffix == "bmp" || suffix == "jpeg" || suffix == "ico" || suffix == "gif" || suffix == "svg" || suffix == "mp3" || suffix == "wmv" || suffix == "mp4") {
 		blob_url = replaceURL(blob_url);
-		window.open(blob_url,"_blank");
+		window.open(blob_url, "_blank");
 	} else {
 		var ele = document.createElement("a");
 		ele.href = blob_url;
@@ -131,46 +135,46 @@ function download_file(){
 		ele.click();
 	};
 };
-function geturl(){
-	if (typeof(window.current_file) == "string") {
+function geturl() {
+	if (typeof (window.current_file) == "string") {
 		var url = "https://api.github.com/" + window.current_file;
 		url = url.split("?")[0].split("/");
 		var i = 4;
 		var link = "https://raw.githubusercontent.com/";
-		while (i < url.length){
-			if (i == 4 || i > 6)	
+		while (i < url.length) {
+			if (i == 4 || i > 6)
 				link += url[i] + "/";
 			if (i == 5)
 				link += url[i] + "/main/";
 			i++;
 		};
-		link = link.substring(link.length-1,-1);
-		console.log(url,link,window.current_file);
+		link = link.substring(link.length - 1, -1);
+		console.log(url, link, window.current_file);
 		return link;
 	} else return window.URL.createObjectURL(window.current_file);
-	
+
 };
-function cancel(){
+function cancel() {
 	back();
 };
-function load_del_page(){
+function load_del_page() {
 	document.querySelector("#content").innerHTML = "<font color=red>Are you sure you want to delete this file?</font><br>If you delete this file, you can't find it on <i>117 Archives</i>.<br><br><br><br><input type=button value=Confirm onclick=javascript:delete_file();><input type=button value=Cancel onclick=javascript:cancel();>";
 };
-function delete_file(){
+function delete_file() {
 	var paths = "repos/" + JSON.parse(window.db["repos_" + ParseURLArgs().repo_id]).fullname + "/contents/" + ParseURLArgs().path;
-	deletefile(paths).then(function(res){
+	deletefile(paths).then(function (res) {
 		console.log(res);
 		var args = buildBackURL(ParseURLArgs());
-		if (typeof(args) == "string")
+		if (typeof (args) == "string")
 			location.href = args;
 		else
 			location.href = "/tree/?repo_id=" + args.repo_id + "&path=" + args.path + "&url=" + args.url;
-	}).catch(function(err){
+	}).catch(function (err) {
 		console.error(err);
 		document.querySelector("#api_status").innerHTML = "<font color=red>Failed to delete this file.</font>";
 	});
 };
-function getSha(s,callback){
+function getSha(s, callback) {
 	if (s) {
 		callback(s);
 		return;
@@ -178,17 +182,17 @@ function getSha(s,callback){
 	var args = ParseURLArgs();
 	var url = args.url;
 	var last_dict_position = url.lastIndexOf("/");
-	url = url.substring(23,last_dict_position);
-	getfile(url).then(function(res){
+	url = url.substring(23, last_dict_position);
+	getfile(url).then(function (res) {
 		var dat = JSON.parse(res.response);
 		var i = 0;
 		var p = ParseURLArgs().path;
-		while (i < dat.length){
+		while (i < dat.length) {
 			if (dat[i].path == p)
 				callback(dat[i].sha);
 			i++;
 		};
-	}).catch(function(err){
+	}).catch(function (err) {
 		callback(err);
 	});
 };

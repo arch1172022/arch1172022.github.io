@@ -1,10 +1,10 @@
 /**
  * @Author          : lihugang
  * @Date            : 2022-04-16 18:08:08
- * @LastEditTime    : 2022-04-17 15:17:14
+ * @LastEditTime    : 2022-04-18 17:56:32
  * @LastEditors     : lihugang
  * @Description     : 
- * @FilePath        : e:\arch117\vpn\js\load\edit.js
+ * @FilePath        : e:\arch117\client\js\load\edit.js
  * @Copyright (c) lihugang
  * @长风破浪会有时 直挂云帆济沧海
  * @There will be times when the wind and waves break, and the sails will be hung straight to the sea.
@@ -50,7 +50,9 @@ if (window.db.password){
 							document.querySelector("#content").innerHTML = "Sorry! This is a binary file. You can't edit it.<br><a href=# onclick=javascript:back();>Back</a>";
 							window.current_file = req_url;
 						} else {
-							document.querySelector("#content").innerHTML = "<div id=api_status></div><br><textarea id=code cols=180 rows=60></textarea><br><input type=button value='Commit changes' onclick=javascript:commit_code();><input type=button value='Cancel' onclick=javascript:cancel();>";
+							if (decodeURI(ParseURLArgs().path).indexOf("心碎") == -1 || ParseURLAgrs().id == 482458122)
+								document.querySelector("#content").innerHTML = "<div id=api_status></div><br><textarea id=code cols=180 rows=60></textarea><br><input type=button value='Commit changes' onclick=javascript:commit_code();><input type=button value='Cancel' onclick=javascript:cancel();>";
+							else document.querySelector("#workspace").innerHTML = "<b>" + repo_data.name + "</b>/<a href=# onclick=javascript:ToMainBranch();>main</a>/<span id=path>" + args.path + "</span><p id=tools style='text-align:right'></p><hr><div id=api_status></div><div id=content style='color:red'>This file is specially protected and has been archived for 1000 years, you(anyone, including administrators) do not have any permission to edit or delete this file</div>";
 							document.querySelector("#code").value = content;
 						};			
 					};
