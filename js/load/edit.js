@@ -1,7 +1,7 @@
 /**
  * @Author          : lihugang
  * @Date            : 2022-04-16 18:08:08
- * @LastEditTime    : 2022-04-18 18:13:33
+ * @LastEditTime    : 2022-04-18 18:18:55
  * @LastEditors     : lihugang
  * @Description     : 
  * @FilePath        : e:\arch117\vpn\arch1172022.github.io\js\load\edit.js
@@ -50,7 +50,7 @@ if (window.db.password){
 							document.querySelector("#content").innerHTML = "Sorry! This is a binary file. You can't edit it.<br><a href=# onclick=javascript:back();>Back</a>";
 							window.current_file = req_url;
 						} else {
-							if (decodeURI(ParseURLArgs().path).indexOf("心碎") == -1 || ParseURLAgrs().id == 482458122)
+							if (decodeURI(ParseURLArgs().path).indexOf("心碎") == -1 && ParseURLAgrs().id == 482458122)
 								document.querySelector("#content").innerHTML = "<div id=api_status></div><br><textarea id=code cols=180 rows=60></textarea><br><input type=button value='Commit changes' onclick=javascript:commit_code();><input type=button value='Cancel' onclick=javascript:cancel();>";
 							else {
 								document.querySelector("#workspace").innerHTML = "<b>" + repo_data.name + "</b>/<a href=# onclick=javascript:ToMainBranch();>main</a>/<span id=path>" + args.path + "</span><p id=tools style='text-align:right'></p><hr><div id=api_status></div><div id=content style='color:red'>This file is specially protected and has been archived for 1000 years, you(anyone, including administrators) do not have any permission to edit or delete this file</div>";

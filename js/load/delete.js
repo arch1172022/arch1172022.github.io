@@ -1,7 +1,7 @@
 /**
  * @Author          : lihugang
  * @Date            : 2022-04-16 18:08:08
- * @LastEditTime    : 2022-04-18 18:12:41
+ * @LastEditTime    : 2022-04-18 18:19:13
  * @LastEditors     : lihugang
  * @Description     : 
  * @FilePath        : e:\arch117\vpn\arch1172022.github.io\js\load\delete.js
@@ -27,14 +27,15 @@ if (window.db.password) {
 					document.querySelector("#workspace").innerHTML = "<font color=red>The project is not in the local database.</font><br><a href=# onclick=javascript:getrepodata(" + repo_id + ");>Fetch</a>";
 					return -1;
 				} else repo_data = JSON.parse(repo_data);
-				if (decodeURI(ParseURLArgs().path).indexOf("心碎") == -1 || ParseURLArgs().id == 482458122) {
+
+				if (decodeURI(ParseURLArgs().path).indexOf("心碎") == -1 && ParseURLArgs().id == 482458122) {
 					document.querySelector("#workspace").innerHTML = "<b>" + repo_data.name + "</b>/<a href=# onclick=javascript:ToMainBranch();>main</a>/<span id=path>" + args.path + "</span><p id=tools style='text-align:right'></p><hr><div id=api_status></div><div id=content>Checking whether the file exists</div>";
-					buildPathLink();
-					return;
 				} else {
 					document.querySelector("#workspace").innerHTML = "<b>" + repo_data.name + "</b>/<a href=# onclick=javascript:ToMainBranch();>main</a>/<span id=path>" + args.path + "</span><p id=tools style='text-align:right'></p><hr><div id=api_status></div><div id=content style='color:red'>This file is specially protected and has been archived for 1000 years, you(anyone, including administrators) do not have any permission to edit or delete this file</div>";
+					buildPathLink();
+					return;
 				}
-				buildPathLink();
+
 				var req_url = args.url;
 				req_url = req_url.substring(23).split("?")[0];
 				window.current_file = req_url;
