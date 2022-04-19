@@ -1,10 +1,10 @@
 /**
  * @Author          : lihugang
  * @Date            : 2022-04-15 12:08:34
- * @LastEditTime    : 2022-04-19 10:34:37
+ * @LastEditTime    : 2022-04-17 14:30:17
  * @LastEditors     : lihugang
  * @Description     : 
- * @FilePath        : e:\arch117\vpn\arch1172022.github.io\js\load\upload.js
+ * @FilePath        : e:\arch117\vpn\js\load\upload.js
  * @Copyright (c) lihugang
  * @长风破浪会有时 直挂云帆济沧海
  * @There will be times when the wind and waves break, and the sails will be hung straight to the sea.
@@ -161,7 +161,7 @@ function do_upload_files(){
 				var dataurl = reader.result;
 				document.querySelectorAll(".upload-status")[i].innerHTML = "Uploading";
 				var content = dataurl.substring(dataurl.indexOf("base64,") + "base64,".length);
-				content = ("uzv2e" + content.toPlain().toBuffer().encode().toString().toBase64()).toBase64()
+				content = content.toPlain().toBuffer().encode().toString().toascii().toBase64();
 				getfile(ParseURLArgs().url.substring("https://api.github.com/".length) + "/" + files[i].name).then(function(res){
 					var sha = JSON.parse(res.response).sha;
 					return uploadFile(i,content,sha);

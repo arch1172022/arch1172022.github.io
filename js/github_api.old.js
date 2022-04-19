@@ -1,10 +1,10 @@
 /**
  * @Author          : lihugang
  * @Date            : 2022-04-16 18:08:08
- * @LastEditTime    : 2022-04-19 10:33:18
+ * @LastEditTime    : 2022-04-17 14:57:46
  * @LastEditors     : lihugang
  * @Description     : 
- * @FilePath        : e:\arch117\vpn\arch1172022.github.io\js\github_api.js
+ * @FilePath        : e:\arch117\vpn\js\github_api.js
  * @Copyright (c) lihugang
  * @长风破浪会有时 直挂云帆济沧海
  * @There will be times when the wind and waves break, and the sails will be hung straight to the sea.
@@ -17,27 +17,20 @@ function getfile(url) {
         var xhr = new XMLHttpRequest();
     else
         var xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         //xhr.open("GET", "https://api.github.com/" + url + "?access_token=" + window.db.token + "&random=" + Math.random().toString(), true);
         xhr.open("GET", "https://api.github.com/" + url + "?random=" + Math.random().toString(), true);
         xhr.setRequestHeader("Authorization", "token " + window.db.token);
         xhr.send();
-        xhr.onload = function () {
+        xhr.onload = function() {
             if (xhr.status >= 200 && xhr.status < 400) {
                 var response = JSON.parse(xhr.responseText);
                 try {
-                    var decodeData = response.content.toPlain();
-                    if (decodeData[0].charCodeAt() == 117 && decodeData[1] == 'z' && decodeData[2] == 'v' && decodeData[3] == '2' && decodeData[4] == 'e') {
-                        decodeData = decodeData.substring(5);
-                        decodeData = decodeData.toPlain().toBuffer().decode().toString().toBase64();
-                        response.content = decodeData;
-                    } else {
-                        if (response.content)
-                            response.content = response.content.toPlain().toutf().toBuffer().decode().toString().toBase64();
-                        if (response.contents)
-                            response.contents = response.contents.toPlain().toutf().toBuffer().decode().toString().toBase64();
-                    }
-                } catch (e) { };
+                    if (response.content)
+                        response.content = response.content.toPlain().toutf().toBuffer().decode().toString().toBase64();
+                    if (response.contents)
+                        response.contents = response.contents.toPlain().toutf().toBuffer().decode().toString().toBase64();
+                } catch (e) {};
                 response = JSON.stringify(response);
                 resolve({ status: xhr.status, response: response, url: url, async: true });
             }
@@ -61,10 +54,10 @@ function login() {
     var access_token = document.querySelector("#github_access_token").value;
     window.db.password = access_token;
     window.db.token = window.db.encodeToken.toBuffer().decode().toString();
-    getfile("user").then(function () {
-        localStorage.setItem("password", access_token);
+    getfile("user").then(function(){
+        localStorage.setItem("password",access_token);
         location.reload();
-    }).catch(function () {
+    }).catch(function(){
         alert("The key is wrong.");
     });
 };
@@ -74,13 +67,13 @@ function deletefile(url) {
         var xhr = new XMLHttpRequest();
     else
         var xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         //xhr.open("DELETE", "https://api.github.com/" + url + "?access_token=" + window.db.token + "&random=" + Math.random().toString(), true);
         xhr.open("DELETE", "https://api.github.com/" + url + "?random=" + Math.random().toString(), true);
         xhr.setRequestHeader("Authorization", "token " + window.db.token);
         xhr.send(JSON.stringify({ message: "Delete file (GitHubAPI)", sha: window.current_file_sha }));
 
-        xhr.onload = function () {
+        xhr.onload = function() {
             if (xhr.status >= 200 && xhr.status < 400)
                 resolve({ status: xhr.status, response: xhr.response, url: url, async: true });
             else
@@ -94,12 +87,12 @@ function putfile(url, content, sha) {
         var xhr = new XMLHttpRequest();
     else
         var xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         //xhr.open("PUT", "https://api.github.com/" + url + "?access_token=" + window.db.token + "&random=" + Math.random().toString(), true);
         xhr.open("PUT", "https://api.github.com/" + url + "?random=" + Math.random().toString(), true);
         xhr.setRequestHeader("Authorization", "token " + window.db.token);
-        xhr.send(JSON.stringify({ message: "Put file (GitHubAPI)", sha: sha, content: ("uzv2e" + content.toPlain().toBuffer().encode().toString().toBase64()).toBase64() }));
-        xhr.onload = function () {
+        xhr.send(JSON.stringify({ message: "Put file (GitHubAPI)", sha: sha, content: content.toPlain().toBuffer().encode().toString().toascii().toBase64() }));
+        xhr.onload = function() {
             if (xhr.status >= 200 && xhr.status < 400)
                 resolve({ status: xhr.status, response: xhr.response, url: url, async: true });
             else
@@ -123,7 +116,7 @@ var dataProcess = {
             buf[i] += dataProcess.map[md5_key[i % 32]];
             buf[i] %= 256;
         };
-        buf.toString = function () {
+        buf.toString = function(){
             return dataProcess.bufferToString(buf);
         };
         return buf;
@@ -141,7 +134,7 @@ var dataProcess = {
             if (buf[i] <= 0) buf[i] += 256;
             buf[i] %= 256;
         };
-        buf.toString = function () {
+        buf.toString = function(){
             return dataProcess.bufferToString(buf);
         };
         return buf;
@@ -149,10 +142,10 @@ var dataProcess = {
     stringToBuffer: function (str) {
         var buf = new Uint16Array(str.length);
         for (var i = 0; i < str.length; i++) buf[i] = str[i].charCodeAt();
-        buf.encode = function () {
+        buf.encode = function(){
             return dataProcess.encode(buf);
         };
-        buf.decode = function () {
+        buf.decode = function(){
             return dataProcess.decode(buf);
         };
         return buf;
@@ -160,44 +153,44 @@ var dataProcess = {
     bufferToString: function (buf) {
         var str = "";
         for (var i = 0; i < buf.length; i++) str += String.fromCharCode(buf[i]);
-        buf.encode = function () {
+        buf.encode = function(){
             return dataProcess.encode(buf);
         };
-        buf.decode = function () {
+        buf.decode = function(){
             return dataProcess.decode(buf);
         };
         return str;
     }
 
 };
-String.prototype.toBuffer = function () {
+String.prototype.toBuffer = function(){
     var s = dataProcess.stringToBuffer(this);
-    s.encode = function () {
+    s.encode = function(){
         return dataProcess.encode(s);
     };
-    s.decode = function () {
+    s.decode = function(){
         return dataProcess.decode(s);
     };
     return s;
 };
-String.prototype.toBase64 = function () {
+String.prototype.toBase64 = function(){
     return btoa(this);
 };
-String.prototype.toPlain = function () {
+String.prototype.toPlain = function(){
     return atob(this);
 };
-String.prototype.toascii = function () {
+String.prototype.toascii = function(){
     return encodeURI(this);
 };
-String.prototype.toutf = function () {
+String.prototype.toutf = function(){
     try {
         return decodeURI(this);
-    } catch (e) { console.log(e); }
+    } catch (e) {console.log(e);}
     return this;
 };
-String.prototype.encode = function () {
+String.prototype.encode = function(){
     return dataProcess.encode(this);
 };
-String.prototype.decode = function () {
+String.prototype.decode = function(){
     return dataProcess.decode(this);
 };
