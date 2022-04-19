@@ -1,7 +1,7 @@
 /**
  * @Author          : lihugang
  * @Date            : 2022-04-16 18:08:08
- * @LastEditTime    : 2022-04-18 18:08:57
+ * @LastEditTime    : 2022-04-19 11:25:42
  * @LastEditors     : lihugang
  * @Description     : 
  * @FilePath        : e:\arch117\vpn\arch1172022.github.io\js\load\blob.js
@@ -63,8 +63,51 @@ if (window.db.password) {
 								document.querySelector("#content").innerHTML = "<p style='text-align:center'>Binary File</p>";
 								window.current_file = req_url;
 							} else {
-								document.querySelector("#content").innerHTML = "<textarea id=code readonly cols=200 rows=120></textarea>";
-								document.querySelector("#code").value = content;
+								var match_string = "!FRAME_LINK[";
+								var match_flag = true;
+								var i;
+								for (i = 0; i < match_string.length; i++) {
+									if (typeof content[i] === "undefined") {
+										match_flag = false;
+										break;
+									}
+									if (content[i] != match_string[i]) {
+										match_flag = false;
+										break;
+									};
+								};
+								console.log(`isFrameLink:${match_flag}`);
+								if (match_flag) {
+									//链接文件
+									var url = "";
+									var success_flag = true;
+									while (1) {
+										if (typeof content[i] === "undefined") {
+											success_flag = false;
+											break;
+										};
+										if (content[i] != ']') url += content[i];
+										else break;
+										i++;
+									};
+									if (success_flag) {
+										var repo = url.split(";")[0];
+										var path = url.split(";")[1];
+										if (repo == "this") repo = ParseURLArgs().repo_id;
+										if (window.db["repos_" + repo]) {
+											var repo_fullname = JSON.parse(window.db["repos_" + repo]).fullname;
+											document.querySelector("#content").innerHTML = `<iframe width=95% height=80% border=1 src=/blob/?repo_id=${repo}&path=${path}&url=https://api.github.com/repos/${repo_fullname}/contents/${path}>Your browser does not support this frame. Please <a href=https://google.cn/chrome>change</a>your browser.</iframe>`;
+										} else {
+											getfile(`repositories/${repo}`).then(function (res) {
+												document.querySelector("#content").innerHTML = `<iframe width=95% height=80% border=1 src=/blob/?repo_id=${repo}&path=${path}&url=https://api.github.com/repos/${JSON.parse(res.response).full_name}/contents/${path}>Your browser does not support this frame. Please <a href=https://google.cn/chrome>change</a>your browser.</iframe>`;
+
+											})
+										}
+									}
+								} else {
+									document.querySelector("#content").innerHTML = "<textarea id=code readonly cols=200 rows=120></textarea>";
+									document.querySelector("#code").value = content;
+								};
 							};
 						};
 						window.download_data = "data:application/octet-stream;base64," + info.content;
@@ -124,6 +167,7 @@ if (window.db.password) {
 										document.querySelector("#content").innerHTML = "<p style='text-align:center'>Binary File</p>";
 										window.current_file = req_url;
 									} else {
+
 										document.querySelector("#content").innerHTML = "<textarea id=code readonly cols=200 rows=120></textarea>";
 										document.querySelector("#code").value = content;
 									};
@@ -212,7 +256,7 @@ function buildPathLink() {
 function download_file() {
 	var ele = document.createElement("a");
 	ele.href = window.download_data;
-	ele.download = document.querySelectorAll(".path_link")[document.querySelectorAll(".path_link").length-1].innerHTML;
+	ele.download = document.querySelectorAll(".path_link")[document.querySelectorAll(".path_link").length - 1].innerHTML;
 	ele.click();
 };
 function geturl() {
